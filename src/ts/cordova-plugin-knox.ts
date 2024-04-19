@@ -35,7 +35,7 @@ function cordovaExecPromise<T>(plugin: string, method: string, args?: any[]): Pr
 // Plugin Interface
 ////////////////////////////////////////////////////////////////
 
-const PLUGIN_NAME = 'SecureLoggerPlugin';
+const PLUGIN_NAME = 'KnoxPlugin';
 
 function invoke<T>(method: string, ...args: any[]): Promise<T> {
     return cordovaExecPromise<T>(PLUGIN_NAME, method, args);

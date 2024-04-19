@@ -27,7 +27,7 @@ function cordovaExecPromise(plugin, method, args) {
 ////////////////////////////////////////////////////////////////
 // Plugin Interface
 ////////////////////////////////////////////////////////////////
-var PLUGIN_NAME = 'SecureLoggerPlugin';
+var PLUGIN_NAME = 'KnoxPlugin';
 function invoke(method) {
     var args = [];
     for (var _i = 1; _i < arguments.length; _i++) {
