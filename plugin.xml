@@ -9,6 +9,7 @@
    </js-module>
 
    <platform name="android">
+      <preference name="KnoxEnabled" default="false" />
       <config-file parent="/*" target="config.xml">
          <preference name="GradlePluginKotlinEnabled" value="true" />
          <feature name="KnoxPlugin">
@@ -17,6 +18,8 @@
       </config-file>
       
       <framework src="com.jakewharton.timber:timber:5.0.1" />
+      <framework src="src/android/knox-plugin.gradle" custom="true" type="gradleReference" />
       <source-file src="src/android/KnoxPlugin.kt" target-dir="java/com/hrs/knox" />
+      <hook type="before_prepare" src="./scripts/before-plugin-prepare.js" />
    </platform>
 </plugin>
