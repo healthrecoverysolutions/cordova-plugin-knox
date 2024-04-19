@@ -1,4 +1,4 @@
-package com.obsidize.secure.logger
+package com.hrs.knox
 
 import org.apache.cordova.CallbackContext
 import org.apache.cordova.CordovaPlugin
@@ -8,7 +8,7 @@ import timber.log.Timber
 
 private const val ACTION_TEST = "test"
 
-class SecureLoggerPlugin : CordovaPlugin() {
+class KnoxPlugin : CordovaPlugin() {
 
 	override fun pluginInitialize() {
 		super.pluginInitialize()
@@ -41,7 +41,7 @@ class SecureLoggerPlugin : CordovaPlugin() {
 
 			else -> {
 				Timber.w("rejecting unsupported action '$action'")
-				callbackContext.error("Action $action is not implemented in SecureLoggerPlugin.")
+				callbackContext.error("Action $action is not implemented in KnoxPlugin.")
 				return false
 			}
 		}
