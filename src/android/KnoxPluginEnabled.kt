@@ -11,6 +11,7 @@ import com.samsung.android.knox.custom.SystemManager
 import com.samsung.android.knox.EnterpriseDeviceManager
 import com.samsung.android.knox.devicesecurity.PasswordPolicy
 
+private const val ACTION_IS_ENABLED = "isEnabled"
 private const val ACTION_SHUTDOWN = "shutdown"
 private const val ACTION_REBOOT = "reboot"
 
@@ -39,6 +40,11 @@ class KnoxPlugin : CordovaPlugin() {
 	): Boolean {
 		Timber.v("execute action '$action'")
 		when (action) {
+			ACTION_IS_ENABLED -> {
+				Timber.v("responding with 'true'")
+				callbackContext.success(JSONObject().put("enabled", true))
+			}
+
 			ACTION_SHUTDOWN -> {
 				cordova.threadPool.execute {
 					try {

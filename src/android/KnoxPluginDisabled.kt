@@ -2,7 +2,10 @@ package com.hrs.knox
 
 import org.apache.cordova.CallbackContext
 import org.apache.cordova.CordovaPlugin
+import org.json.JSONObject
 import timber.log.Timber
+
+private const val ACTION_IS_ENABLED = "isEnabled"
 
 class KnoxPlugin : CordovaPlugin() {
 
@@ -11,8 +14,18 @@ class KnoxPlugin : CordovaPlugin() {
 		args: JSONArray,
 		callbackContext: CallbackContext
 	): Boolean {
-		Timber.w("ignoring action '$action' on disabled variant of knox plugin")
-		callbackContext.error("Knox is disabled")
+		Timber.v("execute action '$action'")
+		when (action) {
+			ACTION_IS_ENABLED -> {
+				Timber.v("responding with 'false'")
+				callbackContext.success(JSONObject().put("enabled", false))
+			}
+
+			else -> {
+				Timber.w("ignoring action '$action' on disabled variant of knox plugin")
+				callbackContext.error("Knox is disabled")
+			}
+		}
 		return true
 	}
 }
