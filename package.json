@@ -27,7 +27,7 @@
     "android"
   ],
   "author": "Josh Noel <jnoel@healthrecoverysolutions.com>",
-  "license": "ISC",
+  "license": "private",
   "bugs": {
     "url": "https://github.com/healthrecoverysolutions/cordova-plugin-knox/issues"
   },
