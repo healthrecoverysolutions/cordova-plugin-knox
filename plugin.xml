@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="cordova-plugin-knox" version="0.1.0">
+
+   <name>Knox Plugin</name>
+   <description>Native bindings for the Knox SDK</description>
+
+   <js-module name="Knox" src="www/cordova-plugin-knox.js">
+      <clobbers target="cordova.plugins.Knox" />
+   </js-module>
+
+   <platform name="android">
+      <config-file parent="/*" target="config.xml">
+         <preference name="GradlePluginKotlinEnabled" value="true" />
+         <feature name="KnoxPlugin">
+            <param name="android-package" value="com.hrs.knox.KnoxPlugin" />
+         </feature>
+      </config-file>
+      
+      <framework src="com.jakewharton.timber:timber:5.0.1" />
+      <source-file src="src/android/KnoxPlugin.kt" target-dir="java/com/hrs/knox" />
+   </platform>
+</plugin>

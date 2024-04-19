@@ -1,0 +1,41 @@
+{
+  "name": "cordova-plugin-knox",
+  "version": "0.1.0",
+  "description": "Native bindings for the Knox SDK",
+  "main": "./lib/index.js",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build:clean": "rm -rf ./www/* ./lib/*",
+    "build:cordova": "tsc -p tsconfig.cordova.json",
+    "build:es6": "tsc -p tsconfig.es6.json",
+    "build": "run-s build:clean build:cordova build:es6",
+    "version": "run-s build version:sync",
+    "version:sync": "node ./scripts/version-sync.js",
+    "version:patch": "npm version patch",
+    "git:publish": "node ./scripts/version-publish.js",
+    "version:publish": "run-s git:publish",
+    "bump": "run-s version:patch version:publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/healthrecoverysolutions/cordova-plugin-knox.git"
+  },
+  "keywords": [
+    "cordova",
+    "knox",
+    "android"
+  ],
+  "author": "Josh Noel <jnoel@healthrecoverysolutions.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/healthrecoverysolutions/cordova-plugin-knox/issues"
+  },
+  "homepage": "https://github.com/healthrecoverysolutions/cordova-plugin-knox#readme",
+  "devDependencies": {
+    "@types/cordova": "11.0.3",
+    "@types/node": "20.12.7",
+    "npm-run-all": "4.1.5",
+    "typescript": "5.4.5"
+  }
+}
