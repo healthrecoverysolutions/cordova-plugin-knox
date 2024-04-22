@@ -41,13 +41,18 @@ function invoke<T>(method: string, ...args: any[]): Promise<T> {
     return cordovaExecPromise<T>(PLUGIN_NAME, method, args);
 }
 
+interface EnabledState {
+    enabled: boolean;
+}
+
 export class KnoxCordovaInterface {
 
     constructor() {
     }
 
-    public test(): Promise<string> {
-        return invoke('test');
+    public isEnabled(): Promise<boolean> {
+        return invoke<EnabledState>('isEnabled')
+            .then((v) => !!v?.enabled);
     }
 }
 

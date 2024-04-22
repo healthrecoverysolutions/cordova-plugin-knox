@@ -5,6 +5,7 @@ import org.apache.cordova.CordovaPlugin
 import org.json.JSONObject
 import timber.log.Timber
 
+private const val KNOX_ENABLED = false
 private const val ACTION_IS_ENABLED = "isEnabled"
 
 class KnoxPlugin : CordovaPlugin() {
@@ -18,7 +19,7 @@ class KnoxPlugin : CordovaPlugin() {
 		when (action) {
 			ACTION_IS_ENABLED -> {
 				Timber.v("responding with 'false'")
-				callbackContext.success(JSONObject().put("enabled", false))
+				callbackContext.success(JSONObject().put("enabled", KNOX_ENABLED))
 			}
 
 			else -> {

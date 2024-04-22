@@ -38,8 +38,9 @@ function invoke(method) {
 var KnoxCordovaInterface = /** @class */ (function () {
     function KnoxCordovaInterface() {
     }
-    KnoxCordovaInterface.prototype.test = function () {
-        return invoke('test');
+    KnoxCordovaInterface.prototype.isEnabled = function () {
+        return invoke('isEnabled')
+            .then(function (v) { return !!(v === null || v === void 0 ? void 0 : v.enabled); });
     };
     return KnoxCordovaInterface;
 }());

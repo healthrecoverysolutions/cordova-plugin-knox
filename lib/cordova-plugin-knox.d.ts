@@ -1,6 +1,6 @@
 export declare class KnoxCordovaInterface {
     constructor();
-    test(): Promise<string>;
+    isEnabled(): Promise<boolean>;
 }
 /**
  * Singleton reference to interact with this cordova plugin
