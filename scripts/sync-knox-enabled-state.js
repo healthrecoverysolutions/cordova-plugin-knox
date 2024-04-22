@@ -13,7 +13,7 @@ const PLUGIN_DIR_NAME = 'cordova-plugin-knox';
 const KNOX_GRADLE_FILE = 'knox-plugin.gradle';
 const KNOX_PLUGIN_FILE = 'KnoxPlugin.kt';
 const KNOX_PLUGIN_ENABLED_FILE = 'KnoxPluginEnabled.kt';
-const KNOX_PLUGIN_DISABLED_FILE = 'KnoxPluginEnabled.kt';
+const KNOX_PLUGIN_DISABLED_FILE = 'KnoxPluginDisabled.kt';
 
 function replaceInFile(filePath, replacers) {
     if (!fs.existsSync(filePath)) {
@@ -70,17 +70,25 @@ function loadKnoxEnabledStateFromConfigXml(configXmlPath) {
 function main(context) {
     const cdvRoot = context && context.opts && context.opts.projectRoot;
     const projectRoot = cdvRoot || process.cwd();
-    const configXmlPath = path.resolve(projectRoot, `config.xml`);
+
+    const configXmlFile = path.resolve(projectRoot, `config.xml`);
     const nodeModulesPluginDir = path.resolve(projectRoot, `node_modules`, PLUGIN_DIR_NAME);
-    const knoxEnabled = loadKnoxEnabledStateFromConfigXml(configXmlPath);
     const pluginsDir = path.resolve(projectRoot, `plugins`, PLUGIN_DIR_NAME, `src`, `android`);
-    const pluginsGradleFile = path.resolve(pluginsDir, KNOX_GRADLE_FILE);
     const platformsDir = path.resolve(projectRoot, `platforms`, `android`);
+
+    const nodeModulesSourceDir = path.resolve(nodeModulesPluginDir, `src`, `android`);
+    const pluginsGradleFile = path.resolve(pluginsDir, KNOX_GRADLE_FILE);
     const platformsGradleFile = path.resolve(platformsDir, PLUGIN_DIR_NAME, KNOX_GRADLE_FILE);
     const platformsSourceDir = path.resolve(platformsDir, `app`, `src`, `main`, `java`, `com`, `hrs`, `knox`);
 
+    const knoxEnabled = loadKnoxEnabledStateFromConfigXml(configXmlFile);
+    console.log(`${PLUGIN_NAME} sync knox enabled state = ${knoxEnabled}`);
+
     if (fs.existsSync(pluginsDir)) {
-        syncKnoxPluginSource(nodeModulesPluginDir, pluginsDir, knoxEnabled);
+        syncKnoxPluginSource(nodeModulesSourceDir, pluginsDir, knoxEnabled);
+    }
+
+    if (fs.existsSync(pluginsGradleFile)) {
         setKnoxGradleEnabled(pluginsGradleFile, knoxEnabled);
     }
 
@@ -89,7 +97,7 @@ function main(context) {
     }
 
     if (fs.existsSync(platformsSourceDir)) {
-        syncKnoxPluginSource(nodeModulesPluginDir, platformsSourceDir, knoxEnabled);
+        syncKnoxPluginSource(nodeModulesSourceDir, platformsSourceDir, knoxEnabled);
     }
 }
 
