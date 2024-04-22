@@ -55,13 +55,13 @@ class KnoxPlugin : CordovaPlugin() {
 						// java.lang.RuntimeException: Unable to start receiver com.hrs.patientconnectknoxservice.PatientConnectInterface:
 						// java.lang.SecurityException: Admin  does not have com.samsung.android.knox.permission.KNOX_CUSTOM_SYSTEM OR
 						// com.sec.enterprise.knox.permission.CUSTOM_SYSTEM
-						CustomDeviceManager cdm = CustomDeviceManager.getInstance()
-						SystemManager kcsm = cdm.getSystemManager()
+						var cdm = CustomDeviceManager.getInstance()
+						var kcsm = cdm.getSystemManager()
 						kcsm.powerOff()
 						callbackContext.success()
-					} catch (Exception e) {
+					} catch (ex: Exception) {
 						val errorMessage = "Failed to power off device"
-						Timber.e(errorMessage, e)
+						Timber.e(errorMessage, ex)
 						callbackContext.error(errorMessage)
 					}
 				}
@@ -70,13 +70,13 @@ class KnoxPlugin : CordovaPlugin() {
 			ACTION_REBOOT -> {
 				cordova.threadPool.execute {
 					try {
-						EnterpriseDeviceManager edm = EnterpriseDeviceManager.getInstance(context)
-						PasswordPolicy passwordPolicy = edm.getPasswordPolicy()
+						var edm = EnterpriseDeviceManager.getInstance(context)
+						var passwordPolicy = edm.getPasswordPolicy()
 						passwordPolicy.reboot(null)
 						callbackContext.success()
-					} catch (Exception e) {
+					} catch (ex: Exception) {
 						val errorMessage = "Failed to reboot device"
-						Timber.e(errorMessage, e)
+						Timber.e(errorMessage, ex)
 						callbackContext.error(errorMessage)
 					}
 				}
