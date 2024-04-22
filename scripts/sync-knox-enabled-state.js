@@ -11,6 +11,7 @@ const path = require('path');
 const PLUGIN_NAME = 'KnoxPlugin';
 const PLUGIN_DIR_NAME = 'cordova-plugin-knox';
 const KNOX_GRADLE_FILE = 'knox-plugin.gradle';
+const KNOX_SDK_FILE = 'knoxsdk.jar';
 const KNOX_PLUGIN_FILE = 'KnoxPlugin.kt';
 const KNOX_PLUGIN_ENABLED_FILE = 'KnoxPluginEnabled.kt';
 const KNOX_PLUGIN_DISABLED_FILE = 'KnoxPluginDisabled.kt';
@@ -51,13 +52,23 @@ function setKnoxGradleEnabled(filePath, enabled) {
     ]);
 }
 
+function copyFile(source, dest, format) {
+    console.log(`${PLUGIN_NAME} copyFile() ${source} -> ${dest}`);
+    if (!format) format = 'utf8';
+    const data = fs.readFileSync(source, format);
+    fs.writeFileSync(dest, data, format);
+}
+
+function removeFile(filePath) {
+    console.log(`${PLUGIN_NAME} removeFile() ${filePath}`);
+    fs.rmSync(filePath);
+}
+
 function syncKnoxPluginSource(inputDir, outputDir, enabled) {
     const inputFile = enabled ? KNOX_PLUGIN_ENABLED_FILE : KNOX_PLUGIN_DISABLED_FILE;
     const inputPath = path.resolve(inputDir, inputFile);
-    const contents = fs.readFileSync(inputPath).toString();
     const outputPath = path.resolve(outputDir, KNOX_PLUGIN_FILE);
-    console.log(`${PLUGIN_NAME} setKnoxPluginEnabled() replace ${outputPath} with ${inputPath} (enabled = ${enabled})`);
-    fs.writeFileSync(outputPath, contents, 'utf8');
+    copyFile(inputPath, outputPath);
 }
 
 function loadKnoxEnabledStateFromConfigXml(configXmlPath) {
@@ -65,6 +76,15 @@ function loadKnoxEnabledStateFromConfigXml(configXmlPath) {
     const preferencePattern = /<preference name="KnoxEnabled" value="([^"]+)"/gm;
     const matched = preferencePattern.exec(xmlData);
     return !!matched && matched[1] === 'true';
+}
+
+function findGradleFilePath(dirPath) {
+    const entries = fs.readdirSync(dirPath, {withFileTypes: true});
+    for (const entry of entries) {
+        if (entry?.isFile() && entry.name?.endsWith('.gradle')) {
+            return path.resolve(dirPath, entry.name);
+        }
+    }
 }
 
 function main(context) {
@@ -77,9 +97,12 @@ function main(context) {
     const platformsDir = path.resolve(projectRoot, `platforms`, `android`);
 
     const nodeModulesSourceDir = path.resolve(nodeModulesPluginDir, `src`, `android`);
-    const pluginsGradleFile = path.resolve(pluginsDir, KNOX_GRADLE_FILE);
-    const platformsGradleFile = path.resolve(platformsDir, PLUGIN_DIR_NAME, KNOX_GRADLE_FILE);
     const platformsSourceDir = path.resolve(platformsDir, `app`, `src`, `main`, `java`, `com`, `hrs`, `knox`);
+    const platformsGradleDir = path.resolve(platformsDir, PLUGIN_DIR_NAME);
+    const platformsGradleFile = path.resolve(platformsDir, PLUGIN_DIR_NAME, KNOX_GRADLE_FILE);
+    const nodeModulesSdkFile = path.resolve(nodeModulesSourceDir, `libs`, KNOX_SDK_FILE);
+    const platformsSdkFile = path.resolve(platformsDir, `app`, `libs`, KNOX_SDK_FILE);
+    const pluginsGradleFile = findGradleFilePath(platformsGradleDir);
 
     const knoxEnabled = loadKnoxEnabledStateFromConfigXml(configXmlFile);
     console.log(`${PLUGIN_NAME} sync knox enabled state = ${knoxEnabled}`);
@@ -98,6 +121,15 @@ function main(context) {
 
     if (fs.existsSync(platformsSourceDir)) {
         syncKnoxPluginSource(nodeModulesSourceDir, platformsSourceDir, knoxEnabled);
+    }
+
+    const platformSdkFileExists = fs.existsSync(platformsSdkFile);
+
+    if (knoxEnabled && !platformSdkFileExists) {
+        copyFile(nodeModulesSdkFile, platformsSdkFile);
+
+    } else if (!knoxEnabled && platformSdkFileExists) {
+        removeFile(platformsSdkFile);
     }
 }
 
