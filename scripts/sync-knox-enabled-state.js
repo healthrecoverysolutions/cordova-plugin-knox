@@ -87,10 +87,7 @@ function findGradleFilePath(dirPath) {
     }
 }
 
-function main(context) {
-    const cdvRoot = context && context.opts && context.opts.projectRoot;
-    const projectRoot = cdvRoot || process.cwd();
-
+function syncCordovaKnoxState(projectRoot) {
     const configXmlFile = path.resolve(projectRoot, `config.xml`);
     const nodeModulesPluginDir = path.resolve(projectRoot, `node_modules`, PLUGIN_DIR_NAME);
     const pluginsDir = path.resolve(projectRoot, `plugins`, PLUGIN_DIR_NAME, `src`, `android`);
@@ -99,6 +96,7 @@ function main(context) {
     const nodeModulesSourceDir = path.resolve(nodeModulesPluginDir, `src`, `android`);
     const platformsSourceDir = path.resolve(platformsDir, `app`, `src`, `main`, `java`, `com`, `hrs`, `knox`);
     const platformsGradleDir = path.resolve(platformsDir, PLUGIN_DIR_NAME);
+
     const platformsGradleFile = path.resolve(platformsDir, PLUGIN_DIR_NAME, KNOX_GRADLE_FILE);
     const nodeModulesSdkFile = path.resolve(nodeModulesSourceDir, `libs`, KNOX_SDK_FILE);
     const platformsSdkFile = path.resolve(platformsDir, `app`, `libs`, KNOX_SDK_FILE);
@@ -131,6 +129,12 @@ function main(context) {
     } else if (!knoxEnabled && platformSdkFileExists) {
         removeFile(platformsSdkFile);
     }
+}
+
+function main(context) {
+    const cdvRoot = context && context.opts && context.opts.projectRoot;
+    const projectRoot = cdvRoot || process.cwd();
+    syncCordovaKnoxState(projectRoot);
 }
 
 module.exports = main;
