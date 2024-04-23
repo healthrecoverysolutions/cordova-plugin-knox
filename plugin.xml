@@ -10,6 +10,7 @@
 
    <platform name="android">
       <preference name="KnoxEnabled" default="true" />
+      <preference name="KnoxSupportLibEnabled" default="false" />
       <config-file parent="/*" target="config.xml">
          <preference name="GradlePluginKotlinEnabled" value="true" />
          <feature name="KnoxPlugin">
@@ -18,10 +19,9 @@
       </config-file>
       
       <source-file src="src/android/KnoxPlugin.kt" target-dir="java/com/hrs/knox" />
-      <lib-file src="src/android/libs/knoxsdk.jar" />
-      <!-- Support Library only needed on Android 9 and lower -->
-      <!-- <lib-file src="src/android/libs/supportlib.jar" /> -->
+      <framework src="src/android/knox-plugin.gradle" custom="true" type="gradleReference" />
       <framework src="com.jakewharton.timber:timber:5.0.1" />
-      <hook type="before_prepare" src="./scripts/sync-knox-enabled-state.js" />
+      <hook type="before_build" src="./scripts/sync-knox-lib.js" />
+      <hook type="before_build" src="./scripts/sync-knox-source.js" />
    </platform>
 </plugin>
