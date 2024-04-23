@@ -10,11 +10,13 @@ module.exports = {
     KNOX_PLUGIN_DISABLED_FILE,
     npm: {
         pluginSourceDir: ['node_modules', 'cordova-plugin-knox', 'src', 'android'],
-        sdkFile: ['node_modules', 'cordova-plugin-knox', 'src', 'android', 'libs', 'knoxsdk.jar']
+        sdkFile: ['node_modules', 'cordova-plugin-knox', 'src', 'android', 'libs', 'knoxsdk.jar'],
+        supportLibFile: ['node_modules', 'cordova-plugin-knox', 'src', 'android', 'libs', 'supportlib.jar']
     },
     cordova: {
         pluginGradleDir: ['platforms', 'android', 'cordova-plugin-knox'],
         pluginSourceDir: ['platforms', 'android', 'app', 'src', 'main', 'java', 'com', 'hrs', 'knox'],
         sdkFile: ['platforms', 'android', 'app', 'libs', 'knoxsdk.jar'],
+        supportLibFile: ['platforms', 'android', 'app', 'libs', 'supportlib.jar'],
     },
 };

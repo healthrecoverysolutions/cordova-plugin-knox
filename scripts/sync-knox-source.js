@@ -5,7 +5,7 @@ const path = require('path');
 const projectPaths = require('./project-paths');
 const {
     log,
-    loadKnoxEnabledStateForProject,
+    loadPluginVariablesForProject,
     syncKnoxPluginSource
 } = require('./hook-utility');
 
@@ -15,12 +15,12 @@ function resolveOutputSourcePath(projectRoot) {
 }
 
 function syncKnoxSource(projectRoot) {
-    const knoxEnabled = loadKnoxEnabledStateForProject(projectRoot);
+    const {knoxManageEnabled} = loadPluginVariablesForProject(projectRoot);
     const nodeModulesSourceDir = path.resolve(projectRoot, ...projectPaths.npm.pluginSourceDir);
     const platformsSourceDir = resolveOutputSourcePath(projectRoot);
 
     if (fs.existsSync(platformsSourceDir)) {
-        syncKnoxPluginSource(nodeModulesSourceDir, platformsSourceDir, knoxEnabled);
+        syncKnoxPluginSource(nodeModulesSourceDir, platformsSourceDir, knoxManageEnabled);
     }
 }
 

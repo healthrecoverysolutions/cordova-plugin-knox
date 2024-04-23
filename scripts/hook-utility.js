@@ -105,23 +105,35 @@ function syncKnoxPluginSource(inputDir, outputDir, enabled) {
 
 module.exports.syncKnoxPluginSource = syncKnoxPluginSource;
 
-function loadKnoxEnabledStateFromConfigXml(configXmlPath) {
+function loadPluginVariablesFromConfigXml(configXmlPath) {
     const xmlData = fs.readFileSync(configXmlPath).toString();
-    const preferencePattern = /<preference name="KnoxEnabled" value="([^"]+)"/gm;
-    const matched = preferencePattern.exec(xmlData);
-    const enabled = !matched || matched[1] === 'true'; // if no match, consider it enabled by default
-    log(`loadKnoxEnabledStateFromConfigXml() enabled = ${enabled}`);
-    return enabled;
+    let matched = null;
+
+    const pluginEnabledPattern = /<preference name="KnoxManageEnabled" value="([^"]+)"/gm;
+    matched = pluginEnabledPattern.exec(xmlData);
+    const knoxManageEnabled = !matched || matched[1] === 'true'; // if no match, consider it enabled by default
+
+    const supportLibEnabledPattern = /<preference name="KnoxManageSupportLibEnabled" value="([^"]+)"/gm;
+    matched = supportLibEnabledPattern.exec(xmlData);
+    const knoxManageSupportLibEnabled = !!matched && matched[1] === 'true'; // false by default
+
+    const result = {
+        knoxManageEnabled,
+        knoxManageSupportLibEnabled
+    };
+
+    log(`loadPluginVariablesFromConfigXml()`, result);
+    return result;
 }
 
-module.exports.loadKnoxEnabledStateFromConfigXml = loadKnoxEnabledStateFromConfigXml;
+module.exports.loadPluginVariablesFromConfigXml = loadPluginVariablesFromConfigXml;
 
-function loadKnoxEnabledStateForProject(projectRoot) {
+function loadPluginVariablesForProject(projectRoot) {
     const configXmlFile = path.resolve(projectRoot, `config.xml`);
-    return loadKnoxEnabledStateFromConfigXml(configXmlFile);
+    return loadPluginVariablesFromConfigXml(configXmlFile);
 }
 
-module.exports.loadKnoxEnabledStateForProject = loadKnoxEnabledStateForProject;
+module.exports.loadPluginVariablesForProject = loadPluginVariablesForProject;
 
 function findGradleFilePath(dirPath) {
     if (!fs.existsSync(dirPath)) {

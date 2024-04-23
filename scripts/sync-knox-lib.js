@@ -5,7 +5,7 @@ const path = require('path');
 const projectPaths = require('./project-paths');
 const {
     log,
-    loadKnoxEnabledStateForProject,
+    loadPluginVariablesForProject,
     copyFile,
     removeFile
 } = require('./hook-utility');
@@ -15,18 +15,35 @@ function resolveOutputSdkPath(projectRoot) {
     return path.resolve(projectRoot, ...projectPaths.cordova.sdkFile);
 }
 
-function syncKnoxLib(projectRoot) {
-    const knoxEnabled = loadKnoxEnabledStateForProject(projectRoot);
-    const npmSdkFile = path.resolve(projectRoot, ...projectPaths.npm.sdkFile);
-    const platformsSdkFile = resolveOutputSdkPath(projectRoot);
-    const platformSdkFileExists = fs.existsSync(platformsSdkFile);
+function resolveOutputSupportLibPath(projectRoot) {
+    // TODO: account for capacitor output path
+    return path.resolve(projectRoot, ...projectPaths.cordova.supportLibFile);
+}
 
-    if (knoxEnabled && !platformSdkFileExists) {
-        copyFile(npmSdkFile, platformsSdkFile);
+function syncJarFile(inputPath, outputPath, enabled) {
+    const outputExists = fs.existsSync(outputPath);
 
-    } else if (!knoxEnabled && platformSdkFileExists) {
-        removeFile(platformsSdkFile);
+    if (enabled && !outputExists) {
+        copyFile(inputPath, outputPath);
+
+    } else if (!enabled && outputExists) {
+        removeFile(outputPath);
     }
+}
+
+function syncKnoxLib(projectRoot) {
+    const {
+        knoxManageEnabled, 
+        knoxManageSupportLibEnabled
+    } = loadPluginVariablesForProject(projectRoot);
+
+    const npmSdkFile = path.resolve(projectRoot, ...projectPaths.npm.sdkFile);
+    const npmSupportLibFile = path.resolve(projectRoot, ...projectPaths.npm.supportLibFile);
+    const platformsSdkFile = resolveOutputSdkPath(projectRoot);
+    const platformsSupportLibFile = resolveOutputSupportLibPath(projectRoot);
+
+    syncJarFile(npmSdkFile, platformsSdkFile, knoxManageEnabled);
+    syncJarFile(npmSupportLibFile, platformsSupportLibFile, knoxManageSupportLibEnabled);
 }
 
 function main(context) {
