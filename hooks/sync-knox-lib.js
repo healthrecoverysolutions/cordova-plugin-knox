@@ -35,7 +35,7 @@ function syncJarFile(inputPath, outputPath, enabled) {
 function syncKnoxLib(projectRoot) {
     const {
         knoxManageEnabled, 
-        knoxManageSupportLibEnabled
+        useKnoxManageSupportLib
     } = loadPluginVariablesForProject(projectRoot);
 
     const npmSdkFile = path.resolve(projectRoot, ...projectPaths.npm.sdkFile);
@@ -44,7 +44,7 @@ function syncKnoxLib(projectRoot) {
 
     const npmSupportLibFile = path.resolve(projectRoot, ...projectPaths.npm.supportLibFile);
     const platformsSupportLibFile = resolveOutputSupportLibPath(projectRoot);
-    syncJarFile(npmSupportLibFile, platformsSupportLibFile, knoxManageSupportLibEnabled);
+    syncJarFile(npmSupportLibFile, platformsSupportLibFile, useKnoxManageSupportLib);
 }
 
 function main(context) {

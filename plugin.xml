@@ -10,7 +10,7 @@
 
    <platform name="android">
       <preference name="KnoxManageEnabled" default="true" />
-      <preference name="KnoxManageSupportLibEnabled" default="false" />
+      <preference name="UseKnoxManageSupportLib" default="false" />
       <config-file parent="/*" target="config.xml">
          <preference name="GradlePluginKotlinEnabled" value="true" />
          <feature name="KnoxPlugin">

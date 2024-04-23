@@ -128,13 +128,13 @@ function loadPluginVariablesFromConfigXml(configXmlPath) {
     matched = pluginEnabledPattern.exec(xmlData);
     const knoxManageEnabled = !matched || matched[1] === 'true'; // if no match, consider it enabled by default
 
-    const supportLibEnabledPattern = /<preference name="KnoxManageSupportLibEnabled" value="([^"]+)"/gm;
-    matched = supportLibEnabledPattern.exec(xmlData);
-    const knoxManageSupportLibEnabled = !!matched && matched[1] === 'true'; // false by default
+    const useSupportLibPattern = /<preference name="UseKnoxManageSupportLib" value="([^"]+)"/gm;
+    matched = useSupportLibPattern.exec(xmlData);
+    const useKnoxManageSupportLib = !!matched && matched[1] === 'true'; // false by default
 
     const result = {
         knoxManageEnabled,
-        knoxManageSupportLibEnabled
+        useKnoxManageSupportLib
     };
 
     log(`loadPluginVariablesFromConfigXml()`, result);
