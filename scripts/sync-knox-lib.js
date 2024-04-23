@@ -38,11 +38,11 @@ function syncKnoxLib(projectRoot) {
     } = loadPluginVariablesForProject(projectRoot);
 
     const npmSdkFile = path.resolve(projectRoot, ...projectPaths.npm.sdkFile);
-    const npmSupportLibFile = path.resolve(projectRoot, ...projectPaths.npm.supportLibFile);
     const platformsSdkFile = resolveOutputSdkPath(projectRoot);
-    const platformsSupportLibFile = resolveOutputSupportLibPath(projectRoot);
-
     syncJarFile(npmSdkFile, platformsSdkFile, knoxManageEnabled);
+
+    const npmSupportLibFile = path.resolve(projectRoot, ...projectPaths.npm.supportLibFile);
+    const platformsSupportLibFile = resolveOutputSupportLibPath(projectRoot);
     syncJarFile(npmSupportLibFile, platformsSupportLibFile, knoxManageSupportLibEnabled);
 }
 
