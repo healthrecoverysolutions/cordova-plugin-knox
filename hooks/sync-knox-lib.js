@@ -2,8 +2,9 @@
 
 const fs = require('fs');
 const path = require('path');
-const projectPaths = require('./project-paths');
+
 const {
+    projectPaths,
     log,
     loadPluginVariablesForProject,
     copyFile,
