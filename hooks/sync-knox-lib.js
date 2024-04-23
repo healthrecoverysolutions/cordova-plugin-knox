@@ -48,7 +48,7 @@ function syncKnoxLib(projectRoot) {
 }
 
 function main(context) {
-    log('sync-knox-source');
+    log('sync-knox-lib');
     const cdvRoot = context && context.opts && context.opts.projectRoot;
     const projectRoot = cdvRoot || process.cwd();
     syncKnoxLib(projectRoot);
