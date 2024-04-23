@@ -16,6 +16,10 @@ const KNOX_PLUGIN_FILE = 'KnoxPlugin.kt';
 const KNOX_PLUGIN_ENABLED_FILE = 'KnoxPluginEnabled.kt';
 const KNOX_PLUGIN_DISABLED_FILE = 'KnoxPluginDisabled.kt';
 
+const SYNC_SOURCE = true;
+const SYNC_GRADLE = false;
+const SYNC_LIBS = false;
+
 function replaceInFile(filePath, replacers) {
     if (!fs.existsSync(filePath)) {
         console.log(`${PLUGIN_NAME} WARN: replaceInFile() file does not exist at ${filePath}`);
@@ -91,54 +95,60 @@ function findGradleFilePath(dirPath) {
 }
 
 function syncCordovaKnoxState(projectRoot) {
-    const configXmlFile = path.resolve(projectRoot, `config.xml`);
     const nodeModulesPluginDir = path.resolve(projectRoot, `node_modules`, PLUGIN_DIR_NAME);
     const pluginsDir = path.resolve(projectRoot, `plugins`, PLUGIN_DIR_NAME, `src`, `android`);
     const platformsDir = path.resolve(projectRoot, `platforms`, `android`);
-
     const nodeModulesSourceDir = path.resolve(nodeModulesPluginDir, `src`, `android`);
-    const platformsSourceDir = path.resolve(platformsDir, `app`, `src`, `main`, `java`, `com`, `hrs`, `knox`);
-    const platformsGradleDir = path.resolve(platformsDir, PLUGIN_DIR_NAME);
-    const platformsLibsDir = path.resolve(platformsDir, `app`, `libs`);
-    const nodeModulesLibsDir = path.resolve(nodeModulesSourceDir, `libs`);
 
-    const nodeModulesSdkFile = path.resolve(nodeModulesLibsDir, KNOX_SDK_FILE);
-    const pluginsGradleFile = path.resolve(pluginsDir, KNOX_GRADLE_FILE);
-    const platformsSdkFile = path.resolve(platformsLibsDir, KNOX_SDK_FILE);
-    const platformsGradleFile = findGradleFilePath(platformsGradleDir);
-
+    const configXmlFile = path.resolve(projectRoot, `config.xml`);
     const knoxEnabled = loadKnoxEnabledStateFromConfigXml(configXmlFile);
     console.log(`${PLUGIN_NAME} sync knox enabled state = ${knoxEnabled}`);
 
-    // sync gradle file in `plugins` directory
-    if (fs.existsSync(pluginsGradleFile)) {
-        setKnoxGradleEnabled(pluginsGradleFile, knoxEnabled);
+    if (SYNC_GRADLE) {
+        const platformsGradleDir = path.resolve(platformsDir, PLUGIN_DIR_NAME);
+        const pluginsGradleFile = path.resolve(pluginsDir, KNOX_GRADLE_FILE);
+        const platformsGradleFile = findGradleFilePath(platformsGradleDir);
+
+        // sync gradle file in `plugins` directory
+        if (fs.existsSync(pluginsGradleFile)) {
+            setKnoxGradleEnabled(pluginsGradleFile, knoxEnabled);
+        }
+
+        // sync gradle file in `platforms` directory
+        if (platformsGradleFile && fs.existsSync(platformsGradleFile)) {
+            setKnoxGradleEnabled(platformsGradleFile, knoxEnabled);
+        }
     }
 
-    // sync source file in `plugins` directory
-    if (fs.existsSync(pluginsDir)) {
-        syncKnoxPluginSource(nodeModulesSourceDir, pluginsDir, knoxEnabled);
+    if (SYNC_SOURCE) {
+        const platformsSourceDir = path.resolve(platformsDir, `app`, `src`, `main`, `java`, `com`, `hrs`, `knox`);
+
+        // sync source file in `plugins` directory
+        if (fs.existsSync(pluginsDir)) {
+            syncKnoxPluginSource(nodeModulesSourceDir, pluginsDir, knoxEnabled);
+        }
+
+        // sync source file in `platforms` directory
+        if (fs.existsSync(platformsSourceDir)) {
+            syncKnoxPluginSource(nodeModulesSourceDir, platformsSourceDir, knoxEnabled);
+        }
     }
 
-    // sync gradle file in `platforms` directory
-    if (platformsGradleFile && fs.existsSync(platformsGradleFile)) {
-        setKnoxGradleEnabled(platformsGradleFile, knoxEnabled);
-    }
-
-    // sync source file in `platforms` directory
-    if (fs.existsSync(platformsSourceDir)) {
-        syncKnoxPluginSource(nodeModulesSourceDir, platformsSourceDir, knoxEnabled);
-    }
-
-    const platformSdkFileExists = fs.existsSync(platformsSdkFile);
-
-    // copy jar files into `platforms` if needed
-    if (knoxEnabled && !platformSdkFileExists) {
-        copyFile(nodeModulesSdkFile, platformsSdkFile);
-
-    // delete jar files from `platforms` if needed
-    } else if (!knoxEnabled && platformSdkFileExists) {
-        removeFile(platformsSdkFile);
+    if (SYNC_LIBS) {
+        const platformsLibsDir = path.resolve(platformsDir, `app`, `libs`);
+        const nodeModulesLibsDir = path.resolve(nodeModulesSourceDir, `libs`);
+        const nodeModulesSdkFile = path.resolve(nodeModulesLibsDir, KNOX_SDK_FILE);
+        const platformsSdkFile = path.resolve(platformsLibsDir, KNOX_SDK_FILE);
+        const platformSdkFileExists = fs.existsSync(platformsSdkFile);
+    
+        // copy jar files into `platforms` if needed
+        if (knoxEnabled && !platformSdkFileExists) {
+            copyFile(nodeModulesSdkFile, platformsSdkFile);
+    
+        // delete jar files from `platforms` if needed
+        } else if (!knoxEnabled && platformSdkFileExists) {
+            removeFile(platformsSdkFile);
+        }
     }
 }
 
