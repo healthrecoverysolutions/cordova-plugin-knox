@@ -3,6 +3,5 @@ def KNOX_ENABLED = false
 if (KNOX_ENABLED) {
     dependencies {
         implementation files('libs/knoxsdk.jar')
-        implementation files('libs/supportlib.jar')
     }
 }
