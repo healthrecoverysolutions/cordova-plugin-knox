@@ -2,24 +2,17 @@
 
 const fs = require('fs');
 const path = require('path');
-
 const {
-    projectPaths,
     log,
     loadPluginVariablesForProject,
     copyFile,
     removeFile
 } = require('./hook-utility');
 
-function resolveOutputSdkPath(projectRoot) {
-    // TODO: account for capacitor output path
-    return path.resolve(projectRoot, ...projectPaths.cordova.sdkFile);
-}
-
-function resolveOutputSupportLibPath(projectRoot) {
-    // TODO: account for capacitor output path
-    return path.resolve(projectRoot, ...projectPaths.cordova.supportLibFile);
-}
+const npmSdkFilePath =              ['node_modules', 'cordova-plugin-knox', 'src', 'android', 'libs', 'knoxsdk.jar'];
+const npmSupportLibFilePath =       ['node_modules', 'cordova-plugin-knox', 'src', 'android', 'libs', 'supportlib.jar'];
+const cordovaSdkFilePath =          ['platforms', 'android', 'app', 'libs', 'knoxsdk.jar'];
+const cordovaSupportLibFilePath =   ['platforms', 'android', 'app', 'libs', 'supportlib.jar'];
 
 function syncJarFile(inputPath, outputPath, enabled) {
     const outputExists = fs.existsSync(outputPath);
@@ -33,22 +26,22 @@ function syncJarFile(inputPath, outputPath, enabled) {
 }
 
 function syncKnoxLib(projectRoot) {
+    log('sync-knox-lib');
     const {
         knoxManageEnabled, 
         useKnoxManageSupportLib
     } = loadPluginVariablesForProject(projectRoot);
 
-    const npmSdkFile = path.resolve(projectRoot, ...projectPaths.npm.sdkFile);
-    const platformsSdkFile = resolveOutputSdkPath(projectRoot);
-    syncJarFile(npmSdkFile, platformsSdkFile, knoxManageEnabled);
+    const sdkInputPath = path.resolve(projectRoot, ...npmSdkFilePath);
+    const sdkOutputPath = path.resolve(projectRoot, ...cordovaSdkFilePath);
+    syncJarFile(sdkInputPath, sdkOutputPath, knoxManageEnabled);
 
-    const npmSupportLibFile = path.resolve(projectRoot, ...projectPaths.npm.supportLibFile);
-    const platformsSupportLibFile = resolveOutputSupportLibPath(projectRoot);
-    syncJarFile(npmSupportLibFile, platformsSupportLibFile, useKnoxManageSupportLib);
+    const supportLibInputPath = path.resolve(projectRoot, ...npmSupportLibFilePath);
+    const supportLibOutputPath = path.resolve(projectRoot, ...cordovaSupportLibFilePath);
+    syncJarFile(supportLibInputPath, supportLibOutputPath, useKnoxManageSupportLib);
 }
 
 function main(context) {
-    log('sync-knox-lib');
     const cdvRoot = context && context.opts && context.opts.projectRoot;
     const projectRoot = cdvRoot || process.cwd();
     syncKnoxLib(projectRoot);

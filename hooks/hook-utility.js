@@ -9,30 +9,6 @@ const fs = require('fs');
 const path = require('path');
 
 const PLUGIN_NAME = 'KnoxPlugin';
-const KNOX_PLUGIN_FILE = 'KnoxPlugin.kt';
-const KNOX_PLUGIN_ENABLED_FILE = 'KnoxPluginEnabled.kt';
-const KNOX_PLUGIN_DISABLED_FILE = 'KnoxPluginDisabled.kt';
-
-module.exports.PLUGIN_NAME = PLUGIN_NAME;
-module.exports.KNOX_PLUGIN_FILE = KNOX_PLUGIN_FILE;
-module.exports.KNOX_PLUGIN_ENABLED_FILE = KNOX_PLUGIN_ENABLED_FILE;
-module.exports.KNOX_PLUGIN_DISABLED_FILE = KNOX_PLUGIN_DISABLED_FILE;
-
-const projectPaths = {
-    npm: {
-        pluginSourceDir: ['node_modules', 'cordova-plugin-knox', 'src', 'android'],
-        sdkFile: ['node_modules', 'cordova-plugin-knox', 'src', 'android', 'libs', 'knoxsdk.jar'],
-        supportLibFile: ['node_modules', 'cordova-plugin-knox', 'src', 'android', 'libs', 'supportlib.jar']
-    },
-    cordova: {
-        pluginGradleDir: ['platforms', 'android', 'cordova-plugin-knox'],
-        pluginSourceDir: ['platforms', 'android', 'app', 'src', 'main', 'java', 'com', 'hrs', 'knox'],
-        sdkFile: ['platforms', 'android', 'app', 'libs', 'knoxsdk.jar'],
-        supportLibFile: ['platforms', 'android', 'app', 'libs', 'supportlib.jar'],
-    },
-};
-
-module.exports.projectPaths = projectPaths;
 
 function log(message, ...args) {
     console.log(`[${PLUGIN_NAME}] ${message}`, ...args);
@@ -45,44 +21,6 @@ function warn(message, ...args) {
 }
 
 module.exports.warn = warn;
-
-function replaceInFile(filePath, replacers) {
-    if (!fs.existsSync(filePath)) {
-        warn(`replaceInFile() file does not exist at ${filePath}`);
-        return;
-    }
-
-    if (!Array.isArray(replacers)) {
-        warn(`replaceInFile() replacers is not an array`);
-        return;
-    }
-
-    if (replacers.length <= 0) {
-        warn(`replaceInFile() replacers array is empty`);
-        return;
-    }
-
-    const input = fs.readFileSync(filePath).toString();
-    let output = input;
-
-    for (const {searchValue, replaceValue} of replacers) {
-        output = output.replace(searchValue, replaceValue);
-    }
-
-    log(`replaceInFile() update file at ${filePath} with ${replacers.length} replacer(s)`);
-    fs.writeFileSync(filePath, output, 'utf8');
-}
-
-function setKnoxGradleEnabled(filePath, enabled) {
-    replaceInFile(filePath, [
-        {
-            searchValue: /(def KNOX_ENABLED = )(true|false)/,
-            replaceValue: `$1${!!enabled}`
-        }
-    ]);
-}
-
-module.exports.setKnoxGradleEnabled = setKnoxGradleEnabled;
 
 function copyFile(source, dest) {
     log(`copyFile() ${source} -> ${dest}`);
@@ -110,15 +48,6 @@ function removeFile(filePath) {
 }
 
 module.exports.removeFile = removeFile;
-
-function syncKnoxPluginSource(inputDir, outputDir, enabled) {
-    const inputFile = enabled ? KNOX_PLUGIN_ENABLED_FILE : KNOX_PLUGIN_DISABLED_FILE;
-    const inputPath = path.resolve(inputDir, inputFile);
-    const outputPath = path.resolve(outputDir, KNOX_PLUGIN_FILE);
-    copyFile(inputPath, outputPath);
-}
-
-module.exports.syncKnoxPluginSource = syncKnoxPluginSource;
 
 function loadPluginVariablesFromConfigXml(configXmlPath) {
     const xmlData = fs.readFileSync(configXmlPath).toString();
@@ -149,17 +78,3 @@ function loadPluginVariablesForProject(projectRoot) {
 }
 
 module.exports.loadPluginVariablesForProject = loadPluginVariablesForProject;
-
-function findGradleFilePath(dirPath) {
-    if (!fs.existsSync(dirPath)) {
-        return null;
-    }
-    const entries = fs.readdirSync(dirPath, {withFileTypes: true});
-    for (const entry of entries) {
-        if (entry?.isFile() && entry.name?.endsWith('.gradle')) {
-            return path.resolve(dirPath, entry.name);
-        }
-    }
-}
-
-module.exports.findGradleFilePath = findGradleFilePath;
