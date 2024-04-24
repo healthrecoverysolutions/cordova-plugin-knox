@@ -3,8 +3,9 @@
 const fs = require('fs');
 const path = require('path');
 const {
-    log, 
-    loadPluginVariablesForProject
+    log,
+    loadPluginVariablesForProject,
+    copyFile
 } = require('./hook-utility');
 
 const KNOX_PLUGIN_FILE =            'KnoxPlugin.kt';
