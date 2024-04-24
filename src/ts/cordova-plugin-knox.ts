@@ -54,6 +54,14 @@ export class KnoxCordovaInterface {
         return invoke<EnabledState>('isEnabled')
             .then((v) => !!v?.enabled);
     }
+
+    public shutdown(): Promise<void> {
+        return invoke('shutdown');
+    }
+
+    public reboot(): Promise<void> {
+        return invoke('reboot');
+    }
 }
 
 /**

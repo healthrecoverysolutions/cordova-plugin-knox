@@ -42,6 +42,12 @@ var KnoxCordovaInterface = /** @class */ (function () {
         return invoke('isEnabled')
             .then(function (v) { return !!(v === null || v === void 0 ? void 0 : v.enabled); });
     };
+    KnoxCordovaInterface.prototype.shutdown = function () {
+        return invoke('shutdown');
+    };
+    KnoxCordovaInterface.prototype.reboot = function () {
+        return invoke('reboot');
+    };
     return KnoxCordovaInterface;
 }());
 exports.KnoxCordovaInterface = KnoxCordovaInterface;
