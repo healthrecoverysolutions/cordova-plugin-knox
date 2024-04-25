@@ -6,7 +6,11 @@ Native bindings for the Knox SDK
 
 See `lib/cordova-plugin-knox.d.ts` for full API
 
-## Contributing
+## Contributing 
+
+### Using the Knox SDK
+
+SDK documentation can be found [here](https://docs.samsungknox.com/devref/knox-sdk/reference/packages.html)
 
 ### Add an Native Android API Entry Point
 
