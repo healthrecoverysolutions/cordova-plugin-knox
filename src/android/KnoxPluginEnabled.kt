@@ -12,6 +12,8 @@ private const val KNOX_ENABLED = true
 private const val ACTION_IS_ENABLED = "isEnabled"
 private const val ACTION_SHUTDOWN = "shutdown"
 private const val ACTION_REBOOT = "reboot"
+private const val ACTION_GET_VERSION_INFO = "getVersionInfo"
+private const val KEY_KNOX_APP_VERSION = "knoxAppVersion"
 
 class KnoxPlugin : CordovaPlugin() {
 
@@ -77,6 +79,24 @@ class KnoxPlugin : CordovaPlugin() {
 					}
 				}
 			}
+
+            ACTION_GET_VERSION_INFO -> {
+                cordova.threadPool.execute {
+                    try {
+                        val context = cordova.context
+                        val edm = EnterpriseDeviceManager.getInstance(context)
+                        val applicationPolicy = edm.applicationPolicy
+                        val knoxAppVersion = applicationPolicy.getApplicationVersion(context.packageName)
+                        val result = JSONObject()
+                            .put(KEY_KNOX_APP_VERSION, knoxAppVersion)
+                        callbackContext.success(result)
+                    } catch (ex: Exception) {
+                        val errorMessage = "Failed to fetch version info: ${ex.message}"
+                        Timber.e(errorMessage, ex)
+                        callbackContext.error(errorMessage)
+                    }
+                }
+            }
 
 			else -> {
 				Timber.w("rejecting unsupported action '$action'")
