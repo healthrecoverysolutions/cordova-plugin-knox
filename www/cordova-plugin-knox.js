@@ -48,6 +48,9 @@ var KnoxCordovaInterface = /** @class */ (function () {
     KnoxCordovaInterface.prototype.reboot = function () {
         return invoke('reboot');
     };
+    KnoxCordovaInterface.prototype.getVersionInfo = function () {
+        return invoke('getVersionInfo');
+    };
     return KnoxCordovaInterface;
 }());
 exports.KnoxCordovaInterface = KnoxCordovaInterface;

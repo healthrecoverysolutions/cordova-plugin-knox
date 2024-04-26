@@ -45,6 +45,10 @@ interface EnabledState {
     enabled: boolean;
 }
 
+export interface VersionInfo {
+    knoxAppVersion: string;
+}
+
 export class KnoxCordovaInterface {
 
     constructor() {
@@ -61,6 +65,10 @@ export class KnoxCordovaInterface {
 
     public reboot(): Promise<void> {
         return invoke('reboot');
+    }
+
+    public getVersionInfo(): Promise<VersionInfo> {
+        return invoke('getVersionInfo');
     }
 }
 
