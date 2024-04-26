@@ -1,4 +1,5 @@
 export {
     KnoxCordovaInterface,
-    Knox
+    Knox,
+    VersionInfo
 } from './cordova-plugin-knox';

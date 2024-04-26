@@ -1,1 +1,1 @@
-export { KnoxCordovaInterface, Knox } from './cordova-plugin-knox';
+export { KnoxCordovaInterface, Knox, VersionInfo } from './cordova-plugin-knox';
