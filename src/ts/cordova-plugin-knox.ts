@@ -49,6 +49,10 @@ export interface VersionInfo {
     knoxAppVersion: string;
 }
 
+export interface IMEI {
+    imei: string;
+}
+
 export class KnoxCordovaInterface {
 
     constructor() {
@@ -69,6 +73,10 @@ export class KnoxCordovaInterface {
 
     public getVersionInfo(): Promise<VersionInfo> {
         return invoke('getVersionInfo');
+    }
+
+    public getIMEI(): Promise<IMEI> {
+        return invoke('getIMEI');
     }
 }
 

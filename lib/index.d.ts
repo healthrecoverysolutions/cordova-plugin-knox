@@ -1,1 +1,1 @@
-export { KnoxCordovaInterface, Knox, VersionInfo } from './cordova-plugin-knox';
+export { KnoxCordovaInterface, Knox, VersionInfo, IMEI } from './cordova-plugin-knox';
