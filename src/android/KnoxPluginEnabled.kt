@@ -17,7 +17,6 @@ private const val ACTION_REBOOT = "reboot"
 private const val ACTION_GET_VERSION_INFO = "getVersionInfo"
 private const val KEY_KNOX_APP_VERSION = "knoxAppVersion"
 private const val ACTION_GET_IMEI = "getIMEI";
-private const val KEY_IMEI = "IMEI";
 
 class KnoxPlugin : CordovaPlugin() {
 
@@ -109,9 +108,7 @@ class KnoxPlugin : CordovaPlugin() {
 						val telephonyManager = context.getSystemService(TELEPHONY_SERVICE) as TelephonyManager
 						val imei = telephonyManager.getImei()
 						Timber.v("Retrieved IMEI: '$imei'")
-						val result = JSONObject()
-							.put(KEY_IMEI, imei)
-						callbackContext.success(result)
+						callbackContext.success(imei)
 					} catch (ex: Exception) {
 						val errorMessage = "Failed to fetch IMEI: ${ex.message}"
 						Timber.e(errorMessage, ex)
