@@ -51,6 +51,9 @@ var KnoxCordovaInterface = /** @class */ (function () {
     KnoxCordovaInterface.prototype.getVersionInfo = function () {
         return invoke('getVersionInfo');
     };
+    KnoxCordovaInterface.prototype.getIMEI = function () {
+        return invoke('getIMEI');
+    };
     return KnoxCordovaInterface;
 }());
 exports.KnoxCordovaInterface = KnoxCordovaInterface;
