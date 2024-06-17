@@ -70,6 +70,10 @@ export class KnoxCordovaInterface {
     public getVersionInfo(): Promise<VersionInfo> {
         return invoke('getVersionInfo');
     }
+
+    public getIMEI(): Promise<string> {
+        return invoke('getIMEI');
+    }
 }
 
 /**

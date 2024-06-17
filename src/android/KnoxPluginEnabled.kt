@@ -8,6 +8,8 @@ import timber.log.Timber
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.EnterpriseDeviceManager
 import com.hrs.patient.BuildConfig
+import android.telephony.TelephonyManager
+import android.content.Context.TELEPHONY_SERVICE
 
 private const val KNOX_ENABLED = true
 private const val ACTION_IS_ENABLED = "isEnabled"
@@ -15,6 +17,7 @@ private const val ACTION_SHUTDOWN = "shutdown"
 private const val ACTION_REBOOT = "reboot"
 private const val ACTION_GET_VERSION_INFO = "getVersionInfo"
 private const val KEY_KNOX_APP_VERSION = "knoxAppVersion"
+private const val ACTION_GET_IMEI = "getIMEI";
 
 class KnoxPlugin : CordovaPlugin() {
 
@@ -91,6 +94,22 @@ class KnoxPlugin : CordovaPlugin() {
 						callbackContext.success(result)
 					} catch (ex: Exception) {
 						val errorMessage = "Failed to fetch version info: ${ex.message}"
+						Timber.e(errorMessage, ex)
+						callbackContext.error(errorMessage)
+					}
+				}
+			}
+
+			ACTION_GET_IMEI -> {
+				cordova.threadPool.execute {
+					try {
+						val context = cordova.context
+						val telephonyManager = context.getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+						val imei = telephonyManager.getImei()
+						Timber.v("Retrieved IMEI: '$imei'")
+						callbackContext.success(imei)
+					} catch (ex: Exception) {
+						val errorMessage = "Failed to fetch IMEI: ${ex.message}"
 						Timber.e(errorMessage, ex)
 						callbackContext.error(errorMessage)
 					}
