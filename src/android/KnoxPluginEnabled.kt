@@ -7,6 +7,7 @@ import org.json.JSONObject
 import timber.log.Timber
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.EnterpriseDeviceManager
+import com.hrs.patient.BuildConfig
 
 private const val KNOX_ENABLED = true
 private const val ACTION_IS_ENABLED = "isEnabled"
@@ -54,8 +55,8 @@ class KnoxPlugin : CordovaPlugin() {
 						// java.lang.RuntimeException: Unable to start receiver com.hrs.patientconnectknoxservice.PatientConnectInterface:
 						// java.lang.SecurityException: Admin  does not have com.samsung.android.knox.permission.KNOX_CUSTOM_SYSTEM OR
 						// com.sec.enterprise.knox.permission.CUSTOM_SYSTEM
-                        val cdm = CustomDeviceManager.getInstance()
-                        cdm.systemManager.powerOff()
+						val cdm = CustomDeviceManager.getInstance()
+						cdm.systemManager.powerOff()
 						callbackContext.success()
 					} catch (ex: Exception) {
 						val errorMessage = "Failed to power off device"
@@ -69,7 +70,7 @@ class KnoxPlugin : CordovaPlugin() {
 				cordova.threadPool.execute {
 					try {
 						val edm = EnterpriseDeviceManager.getInstance(cordova.context)
-                        val passwordPolicy = edm.passwordPolicy
+						val passwordPolicy = edm.passwordPolicy
 						passwordPolicy.reboot(null)
 						callbackContext.success()
 					} catch (ex: Exception) {
@@ -80,23 +81,21 @@ class KnoxPlugin : CordovaPlugin() {
 				}
 			}
 
-            ACTION_GET_VERSION_INFO -> {
-                cordova.threadPool.execute {
-                    try {
-                        val context = cordova.context
-                        val edm = EnterpriseDeviceManager.getInstance(context)
-                        val applicationPolicy = edm.applicationPolicy
-                        val knoxAppVersion = applicationPolicy.getApplicationVersion(context.packageName)
-                        val result = JSONObject()
-                            .put(KEY_KNOX_APP_VERSION, knoxAppVersion)
-                        callbackContext.success(result)
-                    } catch (ex: Exception) {
-                        val errorMessage = "Failed to fetch version info: ${ex.message}"
-                        Timber.e(errorMessage, ex)
-                        callbackContext.error(errorMessage)
-                    }
-                }
-            }
+			ACTION_GET_VERSION_INFO -> {
+				cordova.threadPool.execute {
+					try {
+						val knoxAppVersion = BuildConfig.VERSION_NAME;
+						Timber.v("Retrieved AppVersion: '$knoxAppVersion'")
+						val result = JSONObject()
+							.put(KEY_KNOX_APP_VERSION, knoxAppVersion)
+						callbackContext.success(result)
+					} catch (ex: Exception) {
+						val errorMessage = "Failed to fetch version info: ${ex.message}"
+						Timber.e(errorMessage, ex)
+						callbackContext.error(errorMessage)
+					}
+				}
+			}
 
 			else -> {
 				Timber.w("rejecting unsupported action '$action'")
