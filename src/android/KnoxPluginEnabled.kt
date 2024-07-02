@@ -29,15 +29,16 @@ private const val ACTION_SHUTDOWN = "shutdown"
 private const val ACTION_REBOOT = "reboot"
 private const val ACTION_GET_VERSION_INFO = "getVersionInfo"
 private const val ACTION_GET_IMEI = "getIMEI"
-private const val ACTION_ACCESS_KNOXAPI = "authenticateAPI"
-
 private const val KEY_KNOX_APP_VERSION = "knoxAppVersion"
 private const val TIME_SPAN_24_HOURS_MS = 4 * 60 * 60 * 1000
-private var imei: String = "" // Device IMEI that would be saved after the permissions prompts and directly pulled from Telephony
-private var bearerToken: String = "" // token needed for auth; expires and needs to be regenerated
-private var deviceId: String = "" // this is different from the IMEI; it's specific to Knox Manage
+private const val getDeviceIDURL = "https://us02.manage.samsungknox.com/emm/oapi/device/selectDeviceInfoByImei"
+private const val authenticateAPIURL = "https://us02.manage.samsungknox.com/emm/oauth/token?grant_type=client_credentials&client_id=healthrecoverysolutions@development.healthrecoverysolutions.com&client_secret=HRSistheBest123!"
+private const val performRebootURL = "https://us02.manage.samsungknox.com/emm/oapi/mdm/commonOTCServiceWrapper/sendDeviceControlForRebootDevice"
 
 class KnoxPlugin : CordovaPlugin() {
+    private var imei: String = "" // Device IMEI that would be saved after the permissions prompts and directly pulled from Telephony
+    private var bearerToken: String = "" // token needed for auth; expires and needs to be regenerated
+    private var deviceId: String = "" // this is different from the IMEI; it's specific to Knox Manage
 
     private inner class RebootTimeoutReceiver : BroadcastReceiver() {
 
@@ -180,10 +181,9 @@ class KnoxPlugin : CordovaPlugin() {
 
     private fun performReboot() {
         val context = cordova.context
-        val url = "https://us02.manage.samsungknox.com/emm/oapi/mdm/commonOTCServiceWrapper/sendDeviceControlForRebootDevice"
         val requestQueue = Volley.newRequestQueue(context)
 
-        val stringRequest = object: StringRequest(Request.Method.POST, url,
+        val stringRequest = object: StringRequest(Request.Method.POST, performRebootURL,
             Response.Listener<String> { response ->
                 Timber.v("Reboot with Knox Manage API Response: '$response'")
             },
@@ -239,11 +239,9 @@ class KnoxPlugin : CordovaPlugin() {
         try {
             val context = cordova.context
             Timber.d("Authenticating Knox Manage API")
-            val url =
-                "https://us02.manage.samsungknox.com/emm/oauth/token?grant_type=client_credentials&client_id=healthrecoverysolutions@development.healthrecoverysolutions.com&client_secret=HRSistheBest123!"
             val requestQueue = Volley.newRequestQueue(context)
             val stringRequest = object : StringRequest(
-                Method.POST, url,
+                Method.POST, authenticateAPIURL,
                 Response.Listener { response ->
                     Timber.v("Authenticating Knox Manage API response: $response")
                     try {
@@ -255,7 +253,7 @@ class KnoxPlugin : CordovaPlugin() {
                             getDeviceId()
                         }
                     } catch (e: JSONException) {
-                        e.printStackTrace()
+                        Timber.e(e, "Authenticating Knox Manage API failed")
                     }
 
                 },
@@ -264,7 +262,7 @@ class KnoxPlugin : CordovaPlugin() {
                 }) {
             }
 
-            requestQueue!!.add(stringRequest)
+            requestQueue.add(stringRequest)
         } catch (ex: SecurityException) {
             val errorMessage = "Failed to authenticate Knox Manage API: $ex"
             Timber.e(errorMessage, ex)
@@ -276,11 +274,10 @@ class KnoxPlugin : CordovaPlugin() {
         try {
             val context = cordova.context
             Timber.d("Getting DeviceId Knox Manage API")
-            val url = "https://us02.manage.samsungknox.com/emm/oapi/device/selectDeviceInfoByImei"
             val requestQueue = Volley.newRequestQueue(context)
 
             val stringRequest = object : StringRequest(
-                Method.POST, url,
+                Method.POST, getDeviceIDURL,
                 Response.Listener { response ->
                     Timber.v("Getting DeviceId Knox Manage API Response: '$response'")
                     val responseObject = JSONObject(response)
