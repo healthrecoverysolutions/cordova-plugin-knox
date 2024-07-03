@@ -74,6 +74,10 @@ export class KnoxCordovaInterface {
     public getIMEI(): Promise<string> {
         return invoke('getIMEI');
     }
+
+    public openWifiSettings(): Promise<void> {
+        return invoke('openWifiSettings');
+    }
 }
 
 /**

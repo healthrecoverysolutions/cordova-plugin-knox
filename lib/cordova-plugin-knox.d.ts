@@ -1,7 +1,6 @@
 export interface VersionInfo {
     knoxAppVersion: string;
 }
-
 export declare class KnoxCordovaInterface {
     constructor();
     isEnabled(): Promise<boolean>;
@@ -9,6 +8,7 @@ export declare class KnoxCordovaInterface {
     reboot(): Promise<void>;
     getVersionInfo(): Promise<VersionInfo>;
     getIMEI(): Promise<string>;
+    openWifiSettings(): Promise<void>;
 }
 /**
  * Singleton reference to interact with this cordova plugin

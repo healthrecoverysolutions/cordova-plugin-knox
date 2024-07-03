@@ -54,6 +54,9 @@ var KnoxCordovaInterface = /** @class */ (function () {
     KnoxCordovaInterface.prototype.getIMEI = function () {
         return invoke('getIMEI');
     };
+    KnoxCordovaInterface.prototype.openWifiSettings = function () {
+        return invoke('openWifiSettings');
+    };
     return KnoxCordovaInterface;
 }());
 exports.KnoxCordovaInterface = KnoxCordovaInterface;

@@ -10,6 +10,9 @@ import com.samsung.android.knox.EnterpriseDeviceManager
 import com.hrs.patient.BuildConfig
 import android.telephony.TelephonyManager
 import android.content.Context.TELEPHONY_SERVICE
+import android.content.Intent
+import android.provider.Settings;
+import androidx.core.content.ContextCompat.startActivity
 
 private const val KNOX_ENABLED = true
 private const val ACTION_IS_ENABLED = "isEnabled"
@@ -18,6 +21,7 @@ private const val ACTION_REBOOT = "reboot"
 private const val ACTION_GET_VERSION_INFO = "getVersionInfo"
 private const val KEY_KNOX_APP_VERSION = "knoxAppVersion"
 private const val ACTION_GET_IMEI = "getIMEI";
+private const val ACTION_OPEN_WIFI_SETTINGS= "openWifiSettings";
 
 class KnoxPlugin : CordovaPlugin() {
 
@@ -110,6 +114,20 @@ class KnoxPlugin : CordovaPlugin() {
 						callbackContext.success(imei)
 					} catch (ex: Exception) {
 						val errorMessage = "Failed to fetch IMEI: ${ex.message}"
+						Timber.e(errorMessage, ex)
+						callbackContext.error(errorMessage)
+					}
+				}
+			}
+
+			ACTION_OPEN_WIFI_SETTINGS -> {
+				cordova.threadPool.execute {
+					try {
+						val intent = Intent(Settings.ACTION_WIFI_SETTINGS);
+						startActivity(cordova.context, intent, null)
+						callbackContext.success()
+					} catch (ex: Exception) {
+						val errorMessage = "Failed to open settings: ${ex.message}"
 						Timber.e(errorMessage, ex)
 						callbackContext.error(errorMessage)
 					}
