@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat.startActivity
 
 private const val KNOX_ENABLED = true
 private const val ACTION_IS_ENABLED = "isEnabled"
+private const val ACTION_ACTIVATE_LICENSE = "activateKnoxLicense"
 private const val ACTION_SHUTDOWN = "shutdown"
 private const val ACTION_REBOOT = "reboot"
 private const val ACTION_GET_VERSION_INFO = "getVersionInfo"
@@ -80,6 +81,12 @@ class KnoxPlugin : CordovaPlugin() {
                 callbackContext.success(JSONObject().put("enabled", KNOX_ENABLED))
             }
 
+            ACTION_ACTIVATE_LICENSE -> {
+                cordova.threadPool.execute {
+                  activateKPELicense(callbackContext)
+                }
+            }
+
             ACTION_GET_VERSION_INFO -> {
                 cordova.threadPool.execute {
                     getVersionInfo(callbackContext)
@@ -118,6 +125,61 @@ class KnoxPlugin : CordovaPlugin() {
         }
 
         return true
+    }
+
+    private fun activateKPELicense(callbackContext: CallbackContext) {
+        try {
+            Timber.d("activateKPELicense")
+            val licenseManager = KnoxEnterpriseLicenseManager.getInstance(cordova.context)
+            val kpeActivationResultCallback: LicenseResultCallback = LicenseResultCallbackImpl()
+            licenseManager.activateLicense("KLM06-GN64W-OMFI8-ORE8D-6Q7M2-ANENB", cordova.context.packageName, kpeActivationResultCallback)
+            callbackContext.success()
+        } catch(ex: Exception) {
+            val errorMessage = "Failed to activate knox license: ${ex.message}"
+            Timber.e(errorMessage, ex)
+            callbackContext.error(errorMessage)
+        }
+    }
+
+    private class LicenseResultCallbackImpl : LicenseResultCallback {
+        override fun onLicenseResult(licenseResult: LicenseResult) {
+            when (licenseResult.type) {
+                LicenseResult.Type.ELM_ACTIVATION -> {
+                    Timber.d("BCK activation result")
+                    handleLicenseCallbackResponse(licenseResult)
+                }
+
+                LicenseResult.Type.KLM_ACTIVATION -> {
+                    Timber.d("KPE Activation result")
+                    handleLicenseCallbackResponse(licenseResult)
+                }
+
+                LicenseResult.Type.KLM_DEACTIVATION -> {
+                    Timber.d("KPE Deactivation result")
+                    handleLicenseCallbackResponse(licenseResult)
+                }
+
+                LicenseResult.Type.UNDEFINED -> Timber.e("Unknown error during " + licenseResult.type)
+
+                else -> Timber.e("Unknown error during " + licenseResult.type)
+            }
+        }
+
+        /**
+         * This method will not be called from main thread so if you need to update the UI, be sure to use the appropriate component like Handler or Activity::runOnUiThread()
+         */
+        private fun handleLicenseCallbackResponse(licenseResult: LicenseResult) {
+            Timber.d("handleLicenseCallbackResponse")
+            if (licenseResult.isSuccess) {
+                if (licenseResult.isActivation) {
+                    Timber.d(licenseResult.licenseKey + " activated successfully")
+                } else {
+                    Timber.d(licenseResult.licenseKey + " deactivated successfully")
+                }
+            } else {
+                Timber.e("Error during " + licenseResult.type + " of license key " + licenseResult.licenseKey + " with error code: " + licenseResult.errorCode)
+            }
+        }
     }
 
     private fun getVersionInfo(callbackContext: CallbackContext) {

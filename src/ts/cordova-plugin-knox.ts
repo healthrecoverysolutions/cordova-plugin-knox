@@ -59,6 +59,10 @@ export class KnoxCordovaInterface {
             .then((v) => !!v?.enabled);
     }
 
+    public activateKnoxLicense(): Promise<void> {
+        return invoke('activateKnoxLicense');
+    }
+
     public shutdown(): Promise<void> {
         return invoke('shutdown');
     }

@@ -4,6 +4,7 @@ export interface VersionInfo {
 export declare class KnoxCordovaInterface {
     constructor();
     isEnabled(): Promise<boolean>;
+    activateKnoxLicense(): Promise<void>;
     shutdown(): Promise<void>;
     reboot(): Promise<void>;
     getVersionInfo(): Promise<VersionInfo>;
