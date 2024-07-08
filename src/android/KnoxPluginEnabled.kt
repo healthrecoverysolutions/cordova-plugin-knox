@@ -21,6 +21,8 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
+import android.provider.Settings;
+import androidx.core.content.ContextCompat.startActivity
 
 
 private const val KNOX_ENABLED = true
@@ -34,6 +36,7 @@ private const val TIME_SPAN_24_HOURS_MS = 4 * 60 * 60 * 1000
 private const val getDeviceIDURL = "https://us02.manage.samsungknox.com/emm/oapi/device/selectDeviceInfoByImei"
 private const val authenticateAPIURL = "https://us02.manage.samsungknox.com/emm/oauth/token?grant_type=client_credentials&client_id=healthrecoverysolutions@development.healthrecoverysolutions.com&client_secret=HRSistheBest123!"
 private const val performRebootURL = "https://us02.manage.samsungknox.com/emm/oapi/mdm/commonOTCServiceWrapper/sendDeviceControlForRebootDevice"
+private const val ACTION_OPEN_WIFI_SETTINGS= "openWifiSettings";
 
 class KnoxPlugin : CordovaPlugin() {
     private var imei: String = "" // Device IMEI that would be saved after the permissions prompts and directly pulled from Telephony
@@ -98,6 +101,20 @@ class KnoxPlugin : CordovaPlugin() {
             ACTION_GET_IMEI -> {
                 cordova.threadPool.execute {
                     getIMEI(callbackContext)
+                }
+            }
+
+            ACTION_OPEN_WIFI_SETTINGS -> {
+                cordova.threadPool.execute {
+                    try {
+                        val intent = Intent(Settings.ACTION_WIFI_SETTINGS);
+                        startActivity(cordova.context, intent, null)
+                        callbackContext.success()
+                    } catch (ex: Exception) {
+                        val errorMessage = "Failed to open settings: ${ex.message}"
+                        Timber.e(errorMessage, ex)
+                        callbackContext.error(errorMessage)
+                    }
                 }
             }
 
