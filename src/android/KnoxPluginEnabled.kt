@@ -106,15 +106,7 @@ class KnoxPlugin : CordovaPlugin() {
 
             ACTION_OPEN_WIFI_SETTINGS -> {
                 cordova.threadPool.execute {
-                    try {
-                        val intent = Intent(Settings.ACTION_WIFI_SETTINGS);
-                        startActivity(cordova.context, intent, null)
-                        callbackContext.success()
-                    } catch (ex: Exception) {
-                        val errorMessage = "Failed to open settings: ${ex.message}"
-                        Timber.e(errorMessage, ex)
-                        callbackContext.error(errorMessage)
-                    }
+                   openWifiSettings(callbackContext)
                 }
             }
 
@@ -322,6 +314,18 @@ class KnoxPlugin : CordovaPlugin() {
         } catch (ex: SecurityException) {
             val errorMessage = "Failed to get DeviceID from the Knox Manage API: $ex"
             Timber.e(errorMessage, ex)
+        }
+    }
+
+    private fun openWifiSettings(callbackContext: CallbackContext) {
+        try {
+            val intent = Intent(Settings.ACTION_WIFI_SETTINGS)
+            startActivity(cordova.context, intent, null)
+            callbackContext.success()
+        } catch (ex: Exception) {
+            val errorMessage = "Failed to open settings: ${ex.message}"
+            Timber.e(errorMessage, ex)
+            callbackContext.error(errorMessage)
         }
     }
 }
