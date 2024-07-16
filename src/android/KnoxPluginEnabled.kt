@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Context.TELEPHONY_SERVICE
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.telephony.TelephonyManager
 import com.android.volley.Request
@@ -23,6 +24,7 @@ import org.json.JSONObject
 import timber.log.Timber
 import android.provider.Settings;
 import androidx.core.content.ContextCompat.startActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager
 import com.samsung.android.knox.license.LicenseResult
 import com.samsung.android.knox.license.LicenseResultCallback
@@ -36,7 +38,7 @@ private const val ACTION_REBOOT = "reboot"
 private const val ACTION_GET_VERSION_INFO = "getVersionInfo"
 private const val ACTION_GET_IMEI = "getIMEI"
 private const val KEY_KNOX_APP_VERSION = "knoxAppVersonLicenseResultion"
-private const val TIME_SPAN_24_HOURS_MS = 4 * 60 * 60 * 1000
+private const val TIME_SPAN_24_HOURS_MS = 10 * 1000
 private const val getDeviceIDURL = "https://us02.manage.samsungknox.com/emm/oapi/device/selectDeviceInfoByImei"
 private const val authenticateAPIURL = "https://us02.manage.samsungknox.com/emm/oauth/token?grant_type=client_credentials&client_id=healthrecoverysolutions@development.healthrecoverysolutions.com&client_secret=HRSistheBest123!"
 private const val performRebootURL = "https://us02.manage.samsungknox.com/emm/oapi/mdm/commonOTCServiceWrapper/sendDeviceControlForRebootDevice"
@@ -44,19 +46,12 @@ private const val ACTION_OPEN_WIFI_SETTINGS= "openWifiSettings";
 
 class KnoxPlugin : CordovaPlugin() {
     private var imei: String = "" // Device IMEI that would be saved after the permissions prompts and directly pulled from Telephony
-    private var bearerToken: String = "" // token needed for auth; expires and needs to be regenerated
+    private var bearerToken: String = ""  // token needed for auth; expires and needs to be regenerated
     private var deviceId: String = "" // this is different from the IMEI; it's specific to Knox Manage
-
-    private inner class RebootTimeoutReceiver : BroadcastReceiver() {
-
-        override fun onReceive(context: Context?, intent: Intent?) {
-            Timber.d("onReceive intent: Reboot Device")
-            performReboot()
-        }
-    }
 
     override fun pluginInitialize() {
         super.pluginInitialize()
+        initializeBroadcastReceiver()
         startRebootAlarm()
     }
 
@@ -128,6 +123,17 @@ class KnoxPlugin : CordovaPlugin() {
         }
 
         return true
+    }
+
+    private fun initializeBroadcastReceiver() {
+        val broadCastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(contxt: Context?, intent: Intent?) {
+                when (intent?.action) {
+                    "REBOOT" -> performReboot()
+                }
+            }
+        }
+        LocalBroadcastManager.getInstance(cordova.context).registerReceiver(broadCastReceiver, IntentFilter("REBOOT"))
     }
 
     private fun activateKPELicense(callbackContext: CallbackContext) {
