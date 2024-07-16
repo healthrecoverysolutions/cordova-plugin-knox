@@ -19,7 +19,7 @@
       </config-file>
 
       <source-file src="src/android/KnoxPlugin.kt" target-dir="java/com/hrs/knox" />
-      <source-file src="src/android/RemoteTimeoutReceiver.kt" target-dir="java/com/hrs/knox" />
+      <source-file src="src/android/RebootTimeoutReceiver.kt" target-dir="java/com/hrs/knox" />
       <framework src="src/android/knox-plugin.gradle" custom="true" type="gradleReference" />
       <framework src="com.jakewharton.timber:timber:5.0.1" />
       <hook type="before_build" src="./hooks/sync-knox-lib.js" />
